@@ -13,10 +13,14 @@ import math
 white = Image.open("test_images/square.bmp")
 draw = ImageDraw.Draw(white)
 
-circle_list = []
-circle_list.append(utils.get_first_detector_by_scope_and_angle(math.pi/3, 0, 32))
-circle_list.append(utils.get_last_detector_by_scope_and_angle(math.pi/3, 0, 32))
-draw.point(circle_list, fill=128)
+# circle_list_1 = []
+# for i in range(0,100):
+#     circle_list_1.append(utils.get_circle_pixel_by_angle(math.pi * i / 200, 32))
+# draw.point(circle_list_1, fill=255)
+
+draw.point(utils.get_list_of_detector_pixels_64(math.pi/3, 0, 10), fill=128)
+
+
 
 
 
