@@ -1,4 +1,6 @@
 import math
+from PIL import Image, ImageDraw
+import numpy as np
 
 
 def bresenham_line(x1, y1, x2, y2):
@@ -95,11 +97,22 @@ def get_sum_of_between_pixels_on_path(x1, y1, x2, y2, pixels):
         sum += pixels[pixel[0], pixel[1]][0]
     return sum
 
+
 def normalize_sinogram(sinogram):
     maximum = max(sinogram)
     for i in range(len(sinogram)):
-        sinogram[i] = round(sinogram[i]//maximum * 255), round(sinogram[i]//maximum * 255), round(sinogram[i]//maximum * 255)
+        sinogram[i] = round(sinogram[i]/maximum * 255), round(sinogram[i]/maximum * 255), round(sinogram[i]/maximum * 255)
     return sinogram
+
+
+def save_image_of_lines(step_number, detectors, generator):
+    image = Image.open("test_images/centered_square.bmp")
+    draw = ImageDraw.Draw(image)
+    for detector in detectors:
+        line = bresenham_line(round(detector[0]), round(detector[1]), round(generator[0]), round(generator[1]))
+        draw.point(line, fill=255)
+    image.save("test_images/detectors" + str(step_number) + ".bmp", "BMP")
+
 
 def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, until_step):
     sinogram = []
@@ -114,6 +127,22 @@ def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, u
             sum_of_pix = get_sum_of_between_pixels_on_path(generator_point[0], generator_point[1], detector[0], detector[1], pixels)
             sinogram.append(sum_of_pix)
 
-
-
     return normalize_sinogram(sinogram)
+
+
+def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixels, until_step):
+    s = (radius * 2, radius *2)
+    out_table = np.zeros(s)
+    for i in range(number_of_steps):
+        if i >= until_step:
+            break
+        angle = (2 * math.pi / number_of_steps ) * i
+        generator_point = get_circle_pixel_by_angle(angle, radius)
+        detectors = get_list_of_detector_pixels(scope,angle,radius,number_of_detectors)
+        for j in range(number_of_detectors):
+            line = bresenham_line(round(generator_point[0]), round(generator_point[1]), round(detectors[j][0]), round(detectors[j][1]))
+            line = line[1:len(line) - 1]
+            for point in line:
+                out_table[point[0], point[1]] += pixels[j, i][0]
+    return out_table
+
