@@ -97,7 +97,23 @@ def get_sum_of_between_pixels_on_path(x1, y1, x2, y2, pixels):
 
 def normalize_sinogram(sinogram):
     maximum = max(sinogram)
-    for i in range(0, len(sinogram)):
-        sinogram[i] = round(sinogram[i]/maximum * 255), round(sinogram[i]/maximum * 255), round(sinogram[i]/maximum * 255)
+    for i in range(len(sinogram)):
+        sinogram[i] = round(sinogram[i]//maximum * 255), round(sinogram[i]//maximum * 255), round(sinogram[i]//maximum * 255)
     return sinogram
 
+def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, until_step):
+    sinogram = []
+    generator_step = 2 * math.pi / number_of_steps
+    for i in range(number_of_steps):
+        if i >= until_step:
+            break
+        generator_angle = i * generator_step
+        generator_point = get_circle_pixel_by_angle(generator_angle, radius)
+        list_of_detectors = get_list_of_detector_pixels(scope, generator_angle, radius, number_of_detectors)
+        for detector in list_of_detectors:
+            sum_of_pix = get_sum_of_between_pixels_on_path(generator_point[0], generator_point[1], detector[0], detector[1], pixels)
+            sinogram.append(sum_of_pix)
+
+
+
+    return normalize_sinogram(sinogram)
