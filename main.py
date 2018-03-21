@@ -10,7 +10,7 @@ pixels = image.load()
 number_of_steps = 360
 scope = math.pi/3
 number_of_detectors = 80
-radius = image.size[0]/2
+radius = image.size[0]//2
 
 # sinogram = utils.doTomography(scope, number_of_steps, number_of_detectors, radius, pixels, number_of_steps)
 #
@@ -28,7 +28,17 @@ sinogram_pixels = sinogram_image.load()
 
 out = utils.generate_out_image(scope, radius, number_of_steps, number_of_detectors, sinogram_pixels, number_of_steps)
 max_value = numpy.amax(out)
-out_list =
+out_list = out.tolist()
+flat_list = []
+
+for sublist in out_list:
+    for item in sublist:
+        flat_list.append(item)
+
+
+
+
+
 
 
 img = Image.new('RGB', (radius * 2, number_of_steps))

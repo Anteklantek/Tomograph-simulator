@@ -147,3 +147,4 @@ def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixe
                 out_table[point[0], point[1]] += pixels[j, i][0]
     return out_table
 
+
