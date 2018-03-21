@@ -131,7 +131,7 @@ def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, u
 
 
 def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixels, until_step):
-    s = (radius * 2, radius *2)
+    s = (radius * 2, radius * 2)
     out_table = np.zeros(s)
     for i in range(number_of_steps):
         if i >= until_step:
@@ -140,7 +140,8 @@ def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixe
         generator_point = get_circle_pixel_by_angle(angle, radius)
         detectors = get_list_of_detector_pixels(scope,angle,radius,number_of_detectors)
         for j in range(number_of_detectors):
-            line = bresenham_line(round(generator_point[0]), round(generator_point[1]), round(detectors[j][0]), round(detectors[j][1]))
+            line = bresenham_line(round(generator_point[0]), round(generator_point[1]), round(detectors[j][0]),
+                                  round(detectors[j][1]))
             line = line[1:len(line) - 1]
             for point in line:
                 out_table[point[0], point[1]] += pixels[j, i][0]

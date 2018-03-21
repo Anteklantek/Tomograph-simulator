@@ -26,7 +26,14 @@ radius = image.size[0]/2
 sinogram_image = Image.open("test_images/sinogram.bmp")
 sinogram_pixels = sinogram_image.load()
 
-out = utils.generate_out_image(scope,radius,number_of_steps,number_of_detectors,sinogram_pixels,number_of_steps)
+out = utils.generate_out_image(scope, radius, number_of_steps, number_of_detectors, sinogram_pixels, number_of_steps)
+max_value = numpy.amax(out)
+out_list =
+
+
+img = Image.new('RGB', (radius * 2, number_of_steps))
+
+
 
 
 
