@@ -1,7 +1,7 @@
 import math
 from PIL import Image, ImageDraw
 import numpy as np
-
+import numpy
 
 def bresenham_line(x1, y1, x2, y2):
     list_of_pixels = []
@@ -148,3 +148,21 @@ def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixe
     return out_table
 
 
+def generate_normalized_list(out):
+    max_value = numpy.amax(out)
+    out_list = out.tolist()
+    flat_list = []
+
+    for sublist in out_list:
+        for item in sublist:
+            flat_list.append(item)
+
+    normalized_list = []
+
+    for element in flat_list:
+        normalized_element = element / max_value * 255
+        normalized_pixel = int(round(normalized_element)), int(round(normalized_element)), int(
+            round(normalized_element))
+        normalized_list.append(normalized_pixel)
+
+    return normalized_list

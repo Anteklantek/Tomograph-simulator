@@ -3,7 +3,7 @@ import utils
 import math
 import numpy
 
-image_name = "centered_square.bmp"
+image_name = "half.bmp"
 
 image = Image.open("test_images/" + image_name)
 pixels = image.load()
@@ -28,22 +28,8 @@ sinogram_image = Image.open("test_images/sinogram.bmp")
 sinogram_pixels = sinogram_image.load()
 
 out = utils.generate_out_image(scope, radius, number_of_steps, number_of_detectors, sinogram_pixels, number_of_steps)
-max_value = numpy.amax(out)
-out_list = out.tolist()
-flat_list = []
 
-for sublist in out_list:
-    for item in sublist:
-        flat_list.append(item)
-
-normalized_list = []
-
-
-
-for element in flat_list:
-    normalized_element = element/max_value * 255
-    normalized_pixel = int(round(normalized_element)), int(round(normalized_element)), int(round(normalized_element))
-    normalized_list.append(normalized_pixel)
+normalized_list = utils.generate_normalized_list(out)
 
 img = Image.new('RGB', (radius * 2, radius * 2))
 img.putdata(normalized_list)
