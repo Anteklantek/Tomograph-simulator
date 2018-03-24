@@ -160,9 +160,11 @@ def generate_normalized_list(out):
     normalized_list = []
 
     for element in flat_list:
-        normalized_element = element / max_value * 255
-        normalized_pixel = int(round(normalized_element)), int(round(normalized_element)), int(
-            round(normalized_element))
+        if element < max_value/2:
+            normalized_pixel = 0, 0, 0
+        else:
+            normalized_element = element / max_value * 255
+            normalized_pixel = int(round(normalized_element)), int(round(normalized_element)), int(round(normalized_element))
         normalized_list.append(normalized_pixel)
 
     return normalized_list

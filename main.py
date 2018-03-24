@@ -3,7 +3,7 @@ import utils
 import math
 import numpy
 
-image_name = "half.bmp"
+image_name = "rectangle_left.bmp"
 
 image = Image.open("test_images/" + image_name)
 pixels = image.load()
