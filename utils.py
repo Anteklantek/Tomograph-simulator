@@ -160,7 +160,7 @@ def generate_normalized_list(out):
     normalized_list = []
 
     for element in flat_list:
-        if element < max_value/2:
+        if element < 0:
             normalized_pixel = 0, 0, 0
         else:
             normalized_element = element / max_value * 255

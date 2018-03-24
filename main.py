@@ -3,14 +3,14 @@ import utils
 import math
 import numpy
 
-image_name = "rectangle_left.bmp"
+image_name = "two_squares.bmp"
 
 image = Image.open("test_images/" + image_name)
 pixels = image.load()
 
 number_of_steps = 360
 scope = math.pi/3
-number_of_detectors = 80
+number_of_detectors = 150
 radius = image.size[0]//2
 
 sinogram = utils.doTomography(scope, number_of_steps, number_of_detectors, radius, pixels, number_of_steps)
