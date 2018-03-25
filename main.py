@@ -36,6 +36,4 @@ import numpy
 # img.save("out/" + image_name, "BMP")
 #
 
-
-img = Image.new('RGB', (20, 20))
-img.save("out/test.bmp", "BMP")
+pixel = utils.get_circle_pixel_by_angle(1.0, 64)

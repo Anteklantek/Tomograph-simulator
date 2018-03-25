@@ -1,15 +1,11 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PIL import Image, ImageDraw
+from PyQt5.QtGui import QPixmap
+from PIL import Image
 import utils
 import math
-import numpy
 
 
 class Window(QtWidgets.QWidget):
@@ -20,7 +16,7 @@ class Window(QtWidgets.QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.image_to_process = QLineEdit('dot')
+        self.image_to_process = QLineEdit('square')
         self.noSteps = QLineEdit('200')
         self.noDetectors = QLineEdit('50')
         self.coneSpan = QLineEdit('0.5')
@@ -103,7 +99,7 @@ class Window(QtWidgets.QWidget):
         self.timer_id = self.startTimer(60)
 
     def button_pushed(self):
-        print("tomography started")
+        print("started tomography")
         image_name = self.image_to_process.text()
         image_to_process = QPixmap("test_images/" + image_name + ".bmp").scaled(300, 300)
         self.imageOne.setPixmap(image_to_process)
@@ -136,7 +132,7 @@ class Window(QtWidgets.QWidget):
 
         detector_pixmap = QPixmap("out_detectors/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
         self.imageTwo.setPixmap(detector_pixmap)
-        print("tomography ended")
+        print("ended tomography")
 
 
 

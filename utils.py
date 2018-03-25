@@ -91,7 +91,8 @@ def get_last_detector_by_scope_and_angle_64(scope, angle):
 
 def get_sum_of_between_pixels_on_path(x1, y1, x2, y2, pixels):
     path_pixels = bresenham_line(round(x1), round(y1), round(x2), round(y2))
-    path_pixels = path_pixels[1:len(path_pixels)-1]
+    print(path_pixels)
+    path_pixels = path_pixels[3:len(path_pixels)-3]
     sum = 0
     for pixel in path_pixels:
         sum += pixels[pixel[0], pixel[1]][0]
