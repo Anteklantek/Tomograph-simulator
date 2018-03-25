@@ -105,24 +105,23 @@ def normalize_sinogram(sinogram):
     return sinogram
 
 
-def save_image_of_lines(step_number, detectors, generator):
-    image = Image.open("test_images/centered_square.bmp")
+def save_image_of_lines(step_number, detectors, generator, image_name):
+    image = Image.open("test_images/" + image_name + ".bmp")
     draw = ImageDraw.Draw(image)
     for detector in detectors:
         line = bresenham_line(round(detector[0]), round(detector[1]), round(generator[0]), round(generator[1]))
         draw.point(line, fill=255)
-    image.save("test_images/detectors" + str(step_number) + ".bmp", "BMP")
+    image.save("out_detectors/" + str(step_number) + ".bmp", "BMP")
 
 
-def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, until_step):
+def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, image_name):
     sinogram = []
     generator_step = 2 * math.pi / number_of_steps
     for i in range(number_of_steps):
-        if i >= until_step:
-            break
         generator_angle = i * generator_step
         generator_point = get_circle_pixel_by_angle(generator_angle, radius)
         list_of_detectors = get_list_of_detector_pixels(scope, generator_angle, radius, number_of_detectors)
+        save_image_of_lines(i, list_of_detectors, generator_point, image_name)
         for detector in list_of_detectors:
             sum_of_pix = get_sum_of_between_pixels_on_path(generator_point[0], generator_point[1], detector[0], detector[1], pixels)
             sinogram.append(sum_of_pix)
@@ -130,22 +129,22 @@ def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, u
     return normalize_sinogram(sinogram)
 
 
-def generate_out_image(scope, radius, number_of_steps, number_of_detectors, pixels, until_step):
+def generate_out_images(scope, radius, number_of_steps, number_of_detectors, pixels):
     s = (radius * 2, radius * 2)
     out_table = np.zeros(s)
     for i in range(number_of_steps):
-        if i >= until_step:
-            break
-        angle = (2 * math.pi / number_of_steps ) * i
+        angle = (2 * math.pi / number_of_steps) * i
         generator_point = get_circle_pixel_by_angle(angle, radius)
-        detectors = get_list_of_detector_pixels(scope,angle,radius,number_of_detectors)
+        detectors = get_list_of_detector_pixels(scope, angle, radius, number_of_detectors)
         for j in range(number_of_detectors):
             line = bresenham_line(round(generator_point[0]), round(generator_point[1]), round(detectors[j][0]),
                                   round(detectors[j][1]))
             line = line[1:len(line) - 1]
             for point in line:
                 out_table[point[0], point[1]] += pixels[j, i][0]
-    return out_table
+        intermediate_image = Image.new('RGB', (radius * 2, radius * 2))
+        intermediate_image.putdata(generate_normalized_list(out_table))
+        intermediate_image.save("out_end/" + str(i) + ".bmp", "BMP")
 
 
 def generate_normalized_list(out):
@@ -160,6 +159,7 @@ def generate_normalized_list(out):
     normalized_list = []
 
     for element in flat_list:
+        # element -= 130000
         if element < 0:
             normalized_pixel = 0, 0, 0
         else:

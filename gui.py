@@ -1,8 +1,16 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
+from PIL import Image, ImageDraw
+import utils
+import math
+import numpy
+
 
 class Window(QtWidgets.QWidget):
 
@@ -12,9 +20,10 @@ class Window(QtWidgets.QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.noSteps = QLineEdit('Steps No.')
-        self.noDetectors = QLineEdit('Detectors No.')
-        self.coneSpan = QLineEdit('Cone span (radians)')
+        self.image_to_process = QLineEdit('dot')
+        self.noSteps = QLineEdit('200')
+        self.noDetectors = QLineEdit('50')
+        self.coneSpan = QLineEdit('0.5')
 
         self.doTomographyButton = QPushButton('doTomography()')
         self.doTomographyButton.clicked.connect(self.button_pushed)
@@ -42,6 +51,7 @@ class Window(QtWidgets.QWidget):
         self.imageFour.setPixmap(pixmapFour)
 
         h_box_parameters = QtWidgets.QHBoxLayout()
+        h_box_parameters.addWidget(self.image_to_process)
         h_box_parameters.addWidget(self.noSteps)
         h_box_parameters.addWidget(self.noDetectors)
         h_box_parameters.addWidget(self.coneSpan)
@@ -57,44 +67,71 @@ class Window(QtWidgets.QWidget):
         images_grid.addWidget(self.imageThree, 0, 1)
         images_grid.addWidget(self.imageFour, 1, 1)
 
-        v_box = QtWidgets.QVBoxLayout()
-        v_box.addLayout(h_box_parameters)
-        v_box.addLayout(h_box_slider)
-        v_box.addLayout(images_grid)
-        v_box.setAlignment(Qt.AlignTop)
-
-        h_box_main = QtWidgets.QHBoxLayout()
-        h_box_main.addLayout(v_box)
-
         self.imageSinogram = QLabel(self)
         sinogramPixmap = QPixmap('test_images/sinogram.bmp').scaledToHeight(600)
         self.imageSinogram.setPixmap(sinogramPixmap)
 
-        h_box_main.addWidget(self.imageSinogram)
 
-        self.setLayout(h_box_main)
+        h_box_images = QtWidgets.QHBoxLayout()
+        h_box_images.addLayout(images_grid)
+        h_box_images.addWidget(self.imageSinogram)
+
+        v_box = QtWidgets.QVBoxLayout()
+        v_box.addLayout(h_box_parameters)
+        v_box.addLayout(h_box_slider)
+        v_box.addLayout(h_box_images)
+        v_box.setAlignment(Qt.AlignTop)
+
+        self.setLayout(v_box)
         self.setWindowTitle('Tomography')
-        self.resize(700, 700)
+        self.resize(1200, 700)
         self.show()
 
     def timerEvent(self, event):
         self.killTimer(self.timer_id)
         self.timer_id = -1
-        print(self.slider.value())
+        detector_pixmap = QPixmap("out_detectors/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
+        self.imageTwo.setPixmap(detector_pixmap)
+        intermediate_step = QPixmap("out_end/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
+        self.imageThree.setPixmap(intermediate_step)
 
     def value_changed(self):
         self.sliderValueLabel.setText(str(self.slider.value()))
         if self.timer_id != -1:
             self.killTimer(self.timer_id)
 
-        self.timer_id = self.startTimer(800)
+        self.timer_id = self.startTimer(200)
 
     def button_pushed(self):
+        image_name = self.image_to_process.text()
         steps = int(self.noSteps.text())
-        dectors = int(self.noDetectors.text())
-        scope = float(self.coneSpan.text())
-        self.slider.setMaximum(steps)
-        print(str(steps) + ' ' + str(dectors) + ' ' + str(scope))
+        detectors = int(self.noDetectors.text())
+        scope_string = self.coneSpan.text()
+        scope = float(self.coneSpan.text()) * math.pi
+        self.slider.setMaximum(steps-1)
+        self.slider.setValue(0)
+        image = Image.open("test_images/" + image_name + ".bmp")
+        pixels = image.load()
+        radius = image.size[0] // 2
+        sinogram = utils.doTomography(scope, steps, detectors, radius, pixels, image_name)
+        img = Image.new('RGB', (detectors, steps))
+        img.putdata(sinogram)
+        file_name = image_name + "_" + str(steps) + "_" + str(detectors) + "_" + scope_string + ".bmp"
+        img.save("out_sinogram/" + file_name, "BMP")
+        sinogram_pixmap = QPixmap("out_sinogram/" + file_name).scaledToHeight(600)
+        self.imageSinogram.setPixmap(sinogram_pixmap)
+        sinogram_image = Image.open("out_sinogram/" + file_name)
+        sinogram_pixels = sinogram_image.load()
+        utils.generate_out_images(scope, radius, steps, detectors, sinogram_pixels)
+
+        end_pixmap = QPixmap("out_end/" + str(steps-1) + ".bmp").scaled(300, 300)
+        self.imageFour.setPixmap(end_pixmap)
+
+        intermediate_step = QPixmap("out_end/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
+        self.imageThree.setPixmap(intermediate_step)
+
+        detector_pixmap = QPixmap("out_detectors/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
+        self.imageTwo.setPixmap(detector_pixmap)
 
 
 
