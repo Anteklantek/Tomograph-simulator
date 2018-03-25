@@ -131,9 +131,10 @@ def doTomography (scope, number_of_steps, number_of_detectors, radius, pixels, i
 
 def generate_out_images(scope, radius, number_of_steps, number_of_detectors, pixels):
     s = (radius * 2, radius * 2)
+    generator_step = 2 * math.pi / number_of_steps
     out_table = np.zeros(s)
     for i in range(number_of_steps):
-        angle = (2 * math.pi / number_of_steps) * i
+        angle = i * generator_step
         generator_point = get_circle_pixel_by_angle(angle, radius)
         detectors = get_list_of_detector_pixels(scope, angle, radius, number_of_detectors)
         for j in range(number_of_detectors):
@@ -141,7 +142,7 @@ def generate_out_images(scope, radius, number_of_steps, number_of_detectors, pix
                                   round(detectors[j][1]))
             line = line[1:len(line) - 1]
             for point in line:
-                out_table[point[0], point[1]] += pixels[j, i][0]
+                out_table[point[1], point[0]] += pixels[j, i][0]
         intermediate_image = Image.new('RGB', (radius * 2, radius * 2))
         intermediate_image.putdata(generate_normalized_list(out_table))
         intermediate_image.save("out_end/" + str(i) + ".bmp", "BMP")

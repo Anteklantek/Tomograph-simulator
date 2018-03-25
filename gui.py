@@ -100,10 +100,14 @@ class Window(QtWidgets.QWidget):
         if self.timer_id != -1:
             self.killTimer(self.timer_id)
 
-        self.timer_id = self.startTimer(200)
+        self.timer_id = self.startTimer(60)
 
     def button_pushed(self):
+        print("tomography started")
         image_name = self.image_to_process.text()
+        image_to_process = QPixmap("test_images/" + image_name + ".bmp").scaled(300, 300)
+        self.imageOne.setPixmap(image_to_process)
+        QApplication.processEvents()
         steps = int(self.noSteps.text())
         detectors = int(self.noDetectors.text())
         scope_string = self.coneSpan.text()
@@ -132,6 +136,7 @@ class Window(QtWidgets.QWidget):
 
         detector_pixmap = QPixmap("out_detectors/" + str(self.slider.value()) + ".bmp").scaled(300, 300)
         self.imageTwo.setPixmap(detector_pixmap)
+        print("tomography ended")
 
 
 
