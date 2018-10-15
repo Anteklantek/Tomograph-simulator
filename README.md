@@ -6,7 +6,7 @@ For Informatics in medicine course.
 Na zajęcia z informatyki w medycynie.
 Tresć zadania: http://www.cs.put.poznan.pl/tsternal/tomograf.pdf <br />
 
-#Uzyskane rezultaty:
+# Uzyskane rezultaty:
 Przed: <br />
 ![alt text](https://raw.githubusercontent.com/Anteklantek/Tomograph-simulator/master/test_images/centered_square.bmp) <br />
 Po: <br />
